@@ -21,13 +21,13 @@
         /* Dashboard Styles */
         .balance-card { background: linear-gradient(135deg, #00796b, #004d40); color: white; margin: 15px; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .pkg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .square-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .buy-btn { background: var(--gold); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        .square-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .buy-btn { background: var(--gold); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 8px; }
         
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
         .nav-item { text-align: center; font-size: 11px; color: #888; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--main); font-weight: bold; }
-        .my-pkg-item { background: white; margin: 10px 15px; padding: 15px; border-radius: 10px; border-left: 5px solid var(--main); }
+        .my-pkg-item { background: white; margin: 10px 15px; padding: 15px; border-radius: 10px; border-left: 5px solid var(--main); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -35,7 +35,7 @@
 <div id="loginPage" class="active-page">
     <div class="auth-container">
         <h2 style="color: var(--main);">FRSH লগইন</h2>
-        <input type="number" id="loginPhone" placeholder="ফোন নম্বর দিন">
+        <input type="number" id="loginPhone" placeholder="ফোন নম্বর">
         <input type="password" id="loginPass" placeholder="পাসওয়ার্ড">
         <button class="btn-auth" onclick="handleLogin()">লগইন করুন</button>
         <p onclick="toggleAuth(false)" style="margin-top:20px; color:#555; font-size:14px;">একাউন্ট নেই? <b style="color:var(--main);">সাইনআপ করুন</b></p>
@@ -45,7 +45,7 @@
 <div id="signupPage" class="page">
     <div class="auth-container">
         <h2 style="color: var(--main);">নতুন একাউন্ট</h2>
-        <input type="text" id="regName" placeholder="আপনার নাম">
+        <input type="text" id="regName" placeholder="নাম">
         <input type="number" id="regPhone" placeholder="ফোন নম্বর">
         <input type="password" id="regPass" placeholder="পাসওয়ার্ড">
         <button class="btn-auth" onclick="handleSignup()">সাইনআপ করুন</button>
@@ -54,41 +54,42 @@
 </div>
 
 <div id="mainApp" style="display: none;">
-    <div class="header">FRSH WATER <i class="fas fa-sign-out-alt" onclick="logout()" style="float:right; margin-top:4px;"></i></div>
+    <div class="header">FRSH WATER <i class="fas fa-sign-out-alt" onclick="logout()" style="float:right; cursor:pointer;"></i></div>
     
     <div id="home" class="page active-page">
         <div class="balance-card">
-            <p style="margin:0;">বর্তমান ব্যালেন্স</p>
+            <p style="margin:0; opacity: 0.9;">ব্যালেন্স</p>
             <h1 id="mainBalance">৳ 0.00</h1>
         </div>
+        <h4 style="margin: 15px 0 0 20px; color: #555;">বিনিয়োগ প্যাকেজসমূহ</h4>
         <div id="packageList" class="pkg-grid">লোড হচ্ছে...</div>
     </div>
 
     <div id="myPkg" class="page">
-        <h3 style="text-align: center; padding: 15px;">আমার পণ্যসমূহ</h3>
+        <h3 style="text-align: center; padding: 20px 0 10px 0;">আমার পণ্যসমূহ</h3>
         <div id="myPkgList"></div>
     </div>
 
     <div id="deposit" class="page">
         <div style="background: var(--bkash); color: white; padding: 20px; border-radius: 15px; margin: 15px; text-align: center;">
-            <h3>ডিপোজিট</h3>
+            <h3>ডিপোজিট করুন</h3>
             <p>আমাদের নম্বর: <b>01708078333</b> <i class="fas fa-copy" onclick="copyNum()"></i></p>
-            <input type="text" id="depTrx" placeholder="TrxID দিন">
+            <input type="text" id="depTrx" placeholder="Transaction ID (TrxID)">
             <input type="number" id="depAmt" placeholder="টাকার পরিমাণ">
-            <button onclick="sendDep()" style="background:#b71c1c; color:white; border:none; padding:12px; width:100%; border-radius:8px;">নিশ্চিত করুন</button>
+            <button onclick="sendDep()" style="background:#b71c1c; color:white; border:none; padding:15px; width:100%; border-radius:8px; font-weight:bold;">VERIFY</button>
         </div>
     </div>
 
     <div id="withdraw" class="page">
-        <div style="padding: 20px; background: white; margin: 15px; border-radius: 15px;">
-            <h3>উইথড্র</h3>
+        <div style="padding: 20px; background: white; margin: 15px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <h3 style="text-align: center; color: var(--danger);">উইথড্র</h3>
             <select id="withMethod">
-                <option value="bKash">bKash</option>
-                <option value="Nagad">Nagad</option>
+                <option value="bKash">bKash (বিকাশ)</option>
+                <option value="Nagad">Nagad (নগদ)</option>
             </select>
             <input type="number" id="withAmt" placeholder="মিনিমাম ১২০ টাকা">
-            <input type="text" id="withNum" placeholder="নম্বর দিন">
-            <button onclick="sendWith()" style="background:var(--danger); color:white; border:none; padding:12px; width:100%; border-radius:8px;">উইথড্র রিকোয়েস্ট</button>
+            <input type="text" id="withNum" placeholder="বিকাশ/নগদ নম্বর">
+            <button onclick="sendWith()" style="background:var(--danger); color:white; border:none; padding:15px; width:100%; border-radius:8px; font-weight:bold;">রিকোয়েস্ট পাঠান</button>
         </div>
     </div>
 
@@ -118,7 +119,7 @@
     const db = getDatabase(app);
     let currentUser = localStorage.getItem('loggedUser');
 
-    // Auth Logic
+    // Auth logic
     window.toggleAuth = (isLogin) => {
         document.getElementById('loginPage').style.display = isLogin ? 'block' : 'none';
         document.getElementById('signupPage').style.display = isLogin ? 'none' : 'block';
@@ -129,11 +130,9 @@
         let phone = document.getElementById('regPhone').value;
         let pass = document.getElementById('regPass').value;
         if(!name || !phone || !pass) return alert("সব তথ্য দিন");
-        
         const userRef = ref(db, 'users/' + phone);
         const snap = await get(userRef);
-        if(snap.exists()) return alert("এই নম্বরে অলরেডি একাউন্ট আছে");
-        
+        if(snap.exists()) return alert("এই নম্বরে অ্যাকাউন্ট আছে");
         await set(userRef, { name, phone, pass, balance: 0 });
         alert("সাইনআপ সফল! লগইন করুন।");
         toggleAuth(true);
@@ -146,43 +145,101 @@
         if(snap.exists() && snap.val().pass === pass){
             localStorage.setItem('loggedUser', phone);
             location.reload();
-        } else {
-            alert("ভুল নম্বর বা পাসওয়ার্ড");
-        }
+        } else { alert("ভুল নম্বর বা পাসওয়ার্ড"); }
     };
 
-    // App Initialize
+    window.logout = () => { localStorage.removeItem('loggedUser'); location.reload(); };
+
+    // Initialize App
     if(currentUser){
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        
-        onValue(ref(db, 'users/' + currentUser), s => {
-            if(s.exists()) document.getElementById('mainBalance').innerText = '৳' + s.val().balance.toFixed(2);
-        });
 
-        // Load Products
+        // ১. হোমে প্যাকেজ এবং মেয়াদ দেখানো
         onValue(ref(db, 'products'), (snapshot) => {
             let html = "";
             snapshot.forEach((child) => {
                 let p = child.val();
                 html += `<div class="square-card">
-                    <b>${p.name}</b><br>
-                    <small>৳${p.price} | ৳${p.daily}/দিন</small><br>
+                    <b style="color:var(--main);">${p.name}</b><br>
+                    <div style="font-size: 11px; margin: 5px 0; color: #666;">
+                        মূল্য: ৳${p.price}<br>
+                        ডেইলি: ৳${p.daily}<br>
+                        <b style="color:#e67e22;">মেয়াদ: ${p.days} দিন</b>
+                    </div>
                     <button class="buy-btn" onclick="buyPkg('${child.key}', ${p.price}, '${p.name}', ${p.daily}, ${p.days})">কিনুন</button>
                 </div>`;
             });
-            document.getElementById('packageList').innerHTML = html || "কোন পণ্য নেই";
+            document.getElementById('packageList').innerHTML = html || "কোন প্যাকেজ নেই";
+        });
+
+        // ২. ব্যালেন্স আপডেট
+        onValue(ref(db, 'users/' + currentUser), s => {
+            if(s.exists()) document.getElementById('mainBalance').innerText = '৳' + s.val().balance.toFixed(2);
+        });
+
+        // ৩. আমার পণ্য এবং বাকি দিন
+        onValue(ref(db, 'user_packages/' + currentUser), (s) => {
+            let html = "";
+            let now = Date.now();
+            s.forEach(c => {
+                let p = c.val();
+                let daysPassed = Math.floor((now - p.buyDate) / 86400000);
+                let daysLeft = p.days - daysPassed;
+                html += `<div class="my-pkg-item">
+                    <div style="display:flex; justify-content:space-between;">
+                        <b>${p.name}</b>
+                        <span style="color:var(--main);">৳${p.daily}/দিন</span>
+                    </div>
+                    <div style="font-size:11px; color:#777; margin-top:5px;">
+                        মোট মেয়াদ: ${p.days} দিন | <b style="color:green;">বাকি: ${daysLeft > 0 ? daysLeft : 0} দিন</b>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('myPkgList').innerHTML = html || "<p style='text-align:center;'>কেনা নেই</p>";
         });
     }
 
-    // Buy, Daily Income, Tabs functions... (বাকি লজিকগুলো আগের কোড থেকে একইভাবে থাকবে)
-    window.logout = () => { localStorage.removeItem('loggedUser'); location.reload(); };
+    // Functions
+    window.buyPkg = async (id, price, name, daily, days) => {
+        const userRef = ref(db, 'users/' + currentUser);
+        const snap = await get(userRef);
+        let balance = snap.val().balance || 0;
+        if(balance < price) return alert("ব্যালেন্স নেই");
+        if(confirm(name + " কিনতে চান?")){
+            await update(userRef, { balance: balance - price });
+            await push(ref(db, 'user_packages/' + currentUser), { name, daily, days, buyDate: Date.now(), lastClaim: Date.now() });
+            alert("সফল!");
+        }
+    };
+
+    window.sendDep = async () => {
+        let amt = document.getElementById('depAmt').value;
+        let trx = document.getElementById('depTrx').value;
+        if(!amt || !trx) return alert("তথ্য দিন");
+        await push(ref(db, 'deposits'), { user: currentUser, amount: amt, trx: trx, status: 'pending', date: Date.now() });
+        alert("পাঠানো হয়েছে");
+    };
+
+    window.sendWith = async () => {
+        let amt = document.getElementById('withAmt').value;
+        let num = document.getElementById('withNum').value;
+        let method = document.getElementById('withMethod').value;
+        const snap = await get(ref(db, 'users/' + currentUser));
+        if(amt < 120) return alert("মিনিমাম ১২০ টাকা");
+        if(amt > snap.val().balance) return alert("ব্যালেন্স নেই");
+        await push(ref(db, 'withdraws'), { user: currentUser, amount: amt, number: num, method: method, status: 'pending', date: Date.now() });
+        await update(ref(db, 'users/' + currentUser), { balance: snap.val().balance - amt });
+        alert("সফল!");
+    };
+
     window.showTab = (id, el) => {
         document.querySelectorAll('#mainApp .page').forEach(p => p.classList.remove('active-page'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active-page');
         el.classList.add('active');
     };
+
     window.copyNum = () => { navigator.clipboard.writeText("01708078333"); alert("কপি হয়েছে"); };
 </script>
 </body>
